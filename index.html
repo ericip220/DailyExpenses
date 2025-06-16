@@ -1,500 +1,484 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title></title>
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="2575.6">
-  <style type="text/css">
-    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-    span.Apple-tab-span {white-space:pre}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supermarket Expense Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .screen { display: none; }
+        .active-screen { display: block; }
+        /* Simple spinner animation */
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: #09f;
+            animation: spin 1s ease infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
 </head>
-<body>
-<p class="p1">&lt;!DOCTYPE html&gt;</p>
-<p class="p1">&lt;html lang="en"&gt;</p>
-<p class="p1">&lt;head&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta charset="UTF-8"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;title&gt;Supermarket Expense Tracker&lt;/title&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;script src="https://cdn.tailwindcss.com"&gt;&lt;/script&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;style&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>body {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-family: 'Inter', sans-serif;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.screen { display: none; }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.active-screen { display: block; }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>/* Simple spinner animation */</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.spinner {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border: 4px solid rgba(0, 0, 0, 0.1);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>width: 36px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>height: 36px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 50%;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-left-color: #09f;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>animation: spin 1s ease infinite;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>@keyframes spin {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>0% { transform: rotate(0deg); }</p>
-<p class="p1"><span class="Apple-converted-space">            </span>100% { transform: rotate(360deg); }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/style&gt;</p>
-<p class="p1">&lt;/head&gt;</p>
-<p class="p1">&lt;body class="bg-gray-50 text-gray-800"&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div id="app" class="max-w-lg mx-auto p-4 md:p-6 min-h-screen"&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;!-- Header and Navigation --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;header class="mb-6"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;h1 class="text-3xl font-bold text-gray-900 text-center"&gt;Expense Tracker&lt;/h1&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;p class="text-center text-gray-500"&gt;Log your supermarket receipts easily.&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;nav class="mt-4 flex justify-center bg-gray-200 rounded-lg p-1"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;button id="nav-home" class="nav-btn flex-1 py-2 px-4 text-sm font-semibold rounded-md transition-colors bg-white text-blue-600 shadow"&gt;Add Expense&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;button id="nav-history" class="nav-btn flex-1 py-2 px-4 text-sm font-semibold rounded-md transition-colors text-gray-600"&gt;History&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/nav&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/header&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;main&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;!-- Home Screen: Upload Receipt --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;section id="home-screen" class="screen active-screen"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="bg-white p-6 rounded-xl shadow-md border border-gray-200"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;h2 class="text-xl font-semibold mb-4"&gt;Upload a Receipt&lt;/h2&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;label for="receipt-upload" class="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div class="flex flex-col items-center justify-center pt-5 pb-6"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;svg class="w-10 h-10 mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"&gt;&lt;path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-4-4V7a4 4 0 014-4h10a4 4 0 014 4v5a4 4 0 01-4 4H7z"&gt;&lt;/path&gt;&lt;path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 16v-2a2 2 0 00-2-2H10a2 2 0 00-2 2v2m-6 4h12m-6-4v4"&gt;&lt;/path&gt;&lt;/svg&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;p class="mb-2 text-sm text-gray-500"&gt;&lt;span class="font-semibold"&gt;Click to upload&lt;/span&gt; or drag and drop&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;p class="text-xs text-gray-500"&gt;PNG, JPG (MAX. 5MB)&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;input id="receipt-upload" type="file" class="hidden" accept="image/png, image/jpeg"/&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/label&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;p id="file-name" class="text-center text-sm text-gray-500 mt-2"&gt;&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/section&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;!-- Processing Screen --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;section id="processing-screen" class="screen"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="bg-white p-8 rounded-xl shadow-md border border-gray-200 text-center"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="spinner mx-auto mb-4"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;h2 class="text-xl font-semibold"&gt;Reading Receipt...&lt;/h2&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;p class="text-gray-500"&gt;Extracting information, please wait.&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/section&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;!-- Confirmation Screen --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;section id="confirmation-screen" class="screen"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="bg-white p-6 rounded-xl shadow-md border border-gray-200"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;h2 class="text-xl font-semibold mb-4"&gt;Confirm Details&lt;/h2&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;p class="text-sm text-gray-600 mb-4"&gt;The AI has extracted the items. Please confirm the main details below before saving.&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="space-y-4"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;label for="shop-name" class="block text-sm font-medium text-gray-700"&gt;Shop Name&lt;/label&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;input type="text" id="shop-name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                         </span>&lt;div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;label for="shop-location" class="block text-sm font-medium text-gray-700"&gt;Shop Location (e.g. Surbiton)&lt;/label&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;input type="text" id="shop-location" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;label for="date" class="block text-sm font-medium text-gray-700"&gt;Date&lt;/label&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;input type="date" id="date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;label for="time" class="block text-sm font-medium text-gray-700"&gt;Time&lt;/label&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;input type="time" id="time" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;label for="total" class="block text-sm font-medium text-gray-700"&gt;Total Amount&lt;/label&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;input type="number" step="0.01" id="total" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="mt-6 flex justify-end space-x-3"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;button id="cancel-btn" class="py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"&gt;Cancel&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;button id="save-btn" class="py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"&gt;Save Expense&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/section&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;!-- History Screen --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;section id="history-screen" class="screen"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div id="history-list" class="space-y-3"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;!-- History items will be injected here --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;p class="text-center text-gray-500"&gt;No expenses logged yet.&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/section&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/main&gt;</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;!-- User ID display --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div id="user-id-display" class="fixed bottom-2 right-2 bg-gray-800 text-white text-xs p-2 rounded-lg shadow-lg" style="display: none;"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>User ID: &lt;span id="user-id-value"&gt;&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- Alert Modal --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div id="alert-modal" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center p-4" style="display: none;"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-sm text-center"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;p id="alert-modal-message" class="text-lg mb-4"&gt;&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;button id="alert-modal-close-btn" class="bg-blue-600 text-white py-2 px-6 rounded-md hover:bg-blue-700"&gt;OK&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p2"><span class="Apple-converted-space">    </span></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- Detail Modal --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div id="detail-modal" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center p-4" style="display: none;"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="bg-white rounded-lg shadow-xl w-full max-w-md"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="p-6"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;h3 class="text-xl font-semibold mb-4" id="detail-modal-title"&gt;Expense Details&lt;/h3&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div id="detail-modal-list" class="max-h-80 overflow-y-auto space-y-2 pr-2"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;!-- Item details will be injected here --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="bg-gray-100 px-6 py-3 flex justify-end"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;button id="detail-modal-close-btn" class="bg-gray-600 text-white py-2 px-6 rounded-md hover:bg-gray-700"&gt;Close&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;script type="module"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>// Firebase Imports</p>
-<p class="p1"><span class="Apple-converted-space">        </span>import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";</p>
-<p class="p1"><span class="Apple-converted-space">        </span>import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";</p>
-<p class="p1"><span class="Apple-converted-space">        </span>import { getFirestore, collection, addDoc, onSnapshot, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>// --- App State ---</p>
-<p class="p1"><span class="Apple-converted-space">        </span>let db;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>let auth;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>let userId;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>let isAuthReady = false;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>let unsubscribeHistory = null;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>let currentExpenseDetails = null;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>// --- UI Elements ---</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const screens = document.querySelectorAll('.screen');</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const navBtns = document.querySelectorAll('.nav-btn');</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const homeNavBtn = document.getElementById('nav-home');</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const historyNavBtn = document.getElementById('nav-history');</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const receiptUploadInput = document.getElementById('receipt-upload');</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const fileNameDisplay = document.getElementById('file-name');</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>const shopNameInput = document.getElementById('shop-name');</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const shopLocationInput = document.getElementById('shop-location');</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const dateInput = document.getElementById('date');</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const timeInput = document.getElementById('time');</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const totalInput = document.getElementById('total');</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>const saveBtn = document.getElementById('save-btn');</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const cancelBtn = document.getElementById('cancel-btn');</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>const historyList = document.getElementById('history-list');</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const userIdDisplay = document.getElementById('user-id-display');</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const userIdValue = document.getElementById('user-id-value');</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>const alertModal = document.getElementById('alert-modal');</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const alertModalMessage = document.getElementById('alert-modal-message');</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const alertModalCloseBtn = document.getElementById('alert-modal-close-btn');</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>const detailModal = document.getElementById('detail-modal');</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const detailModalTitle = document.getElementById('detail-modal-title');</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const detailModalList = document.getElementById('detail-modal-list');</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const detailModalCloseBtn = document.getElementById('detail-modal-close-btn');</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>// --- Firebase Config ---</p>
-<p class="p1"><span class="Apple-converted-space">        </span>// For Firebase JS SDK v7.20.0 and later, measurementId is optional</p>
-<p class="p1"><span class="Apple-tab-span">	</span>const firebaseConfig = {</p>
-<p class="p1"><span class="Apple-converted-space">  <span class="Apple-tab-span">	</span></span>apiKey: "AIzaSyDmjj7Qc1nVFxT13UCOdDgdHkC6KhWEPPg",</p>
-<p class="p1"><span class="Apple-converted-space">  <span class="Apple-tab-span">	</span></span>authDomain: "dailyexpense-22a97.firebaseapp.com",</p>
-<p class="p1"><span class="Apple-converted-space">  <span class="Apple-tab-span">	</span></span>projectId: "dailyexpense-22a97",</p>
-<p class="p1"><span class="Apple-converted-space">  <span class="Apple-tab-span">	</span></span>storageBucket: "dailyexpense-22a97.firebasestorage.app",</p>
-<p class="p1"><span class="Apple-converted-space">  <span class="Apple-tab-span">	</span></span>messagingSenderId: "923676503604",</p>
-<p class="p1"><span class="Apple-converted-space">  <span class="Apple-tab-span">	</span></span>appId: "1:923676503604:web:8924e975ead398f2c86461",</p>
-<p class="p1"><span class="Apple-converted-space">  <span class="Apple-tab-span">	</span></span>measurementId: "G-H9QD9SSL3Y"</p>
-<p class="p1"><span class="Apple-tab-span">	</span>};</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const appId = 'expense-tracker-beta';</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>// --- Utility Functions ---</p>
-<p class="p1"><span class="Apple-converted-space">        </span>function showScreen(screenId) {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>screens.forEach(screen =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>screen.classList.toggle('active-screen', screen.id === screenId);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>});</p>
-<p class="p1"><span class="Apple-converted-space">            </span>if (screenId === 'history-screen' &amp;&amp; isAuthReady) {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>fetchAndDisplayHistory();</p>
-<p class="p1"><span class="Apple-converted-space">            </span>} else if (unsubscribeHistory) {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>unsubscribeHistory();</p>
-<p class="p1"><span class="Apple-converted-space">                </span>unsubscribeHistory = null;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>function updateNav(activeBtnId) {</p>
-<p class="p1"><span class="Apple-converted-space">             </span>navBtns.forEach(btn =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>btn.classList.toggle('bg-white', btn.id === activeBtnId);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>btn.classList.toggle('text-blue-600', btn.id === activeBtnId);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>btn.classList.toggle('shadow', btn.id === activeBtnId);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>btn.classList.toggle('text-gray-600', btn.id !== activeBtnId);</p>
-<p class="p1"><span class="Apple-converted-space">             </span>});</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>function showModal(message, type = 'alert') {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>if (type === 'alert') {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>alertModalMessage.textContent = message;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>alertModal.style.display = 'flex';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>} else if (type === 'detail') {</p>
-<p class="p1"><span class="Apple-converted-space">                 </span>detailModal.style.display = 'flex';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>function hideModal(type = 'alert') {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>if (type === 'alert') {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>alertModal.style.display = 'none';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>} else if (type === 'detail') {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>detailModal.style.display = 'none';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>// --- Core Application Logic ---</p>
-<p class="p1"><span class="Apple-converted-space">        </span>function toBase64(file) {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>return new Promise((resolve, reject) =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>const reader = new FileReader();</p>
-<p class="p1"><span class="Apple-converted-space">                </span>reader.readAsDataURL(file);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>reader.onload = () =&gt; resolve(reader.result.split(',')[1]);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>reader.onerror = error =&gt; reject(error);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>});</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>async function handleFileUpload(event) {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const file = event.target.files[0];</p>
-<p class="p1"><span class="Apple-converted-space">            </span>if (!file) return;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>fileNameDisplay.textContent = `Selected: ${file.name}`;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>showScreen('processing-screen');</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>try {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>const base64Image = await toBase64(file);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>await extractDataFromImage(base64Image);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>} catch (error) {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>console.error("Error processing file:", error);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>showModal("Could not process the image. Please try again.");</p>
-<p class="p1"><span class="Apple-converted-space">                </span>showScreen('home-screen');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p1"><span class="Apple-converted-space">             </span>// Reset file input to allow re-uploading the same file</p>
-<p class="p1"><span class="Apple-converted-space">            </span>receiptUploadInput.value = '';</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>async function extractDataFromImage(base64ImageData) {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const prompt = `</p>
-<p class="p1"><span class="Apple-converted-space">                </span>Analyze this receipt image. The user is currently in Surbiton, England. Extract the following information and return it as a single JSON object:</p>
-<p class="p1"><span class="Apple-converted-space">                </span>1. "shopName": The name of the store or shop (e.g., "M&amp;S", "Tesco").</p>
-<p class="p1"><span class="Apple-converted-space">                </span>2. "shopLocation": The specific branch or location of the shop (e.g., "Surbiton", "Kingston upon Thames"). If not explicitly mentioned, you can infer it might be Surbiton.</p>
-<p class="p1"><span class="Apple-converted-space">                </span>3. "date": The date of the transaction in YYYY-MM-DD format.</p>
-<p class="p1"><span class="Apple-converted-space">                </span>4. "time": The time of the transaction in HH:MM (24-hour) format.</p>
-<p class="p1"><span class="Apple-converted-space">                </span>5. "total": The final total amount as a number, without currency symbols.</p>
-<p class="p1"><span class="Apple-converted-space">                </span>6. "items": An array of objects, where each object represents a purchased item. Each item object should have two properties: "name" (string) and "price" (number). Do not include items that are not actual products like "subtotal", "vat", "bag charge", or "total".</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">                </span>If any top-level piece of information is not found, use "null" for its value. If no items can be found, return an empty array for the "items" property.</p>
-<p class="p1"><span class="Apple-converted-space">            </span>`;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const payload = {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>contents: [{<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-converted-space">                    </span>parts: [</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>{ text: prompt },<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-converted-space">                        </span>{ inlineData: { mimeType: "image/jpeg", data: base64ImageData } }</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>]<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-converted-space">                </span>}],</p>
-<p class="p1"><span class="Apple-converted-space">                </span>generationConfig: { "responseMimeType": "application/json" }</p>
-<p class="p1"><span class="Apple-converted-space">            </span>};</p>
-<p class="p1"><span class="Apple-converted-space">            </span>// For testing, you must get your own Gemini API Key from Google AI Studio.</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const apiKey = "AIzaSyBm4vJeUrk7SxKHY2aN0DqATttKeWnV_Ww";</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>try {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });</p>
-<p class="p1"><span class="Apple-converted-space">                </span>if (!response.ok) {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>const errorBody = await response.text();</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>console.error("API Error Response:", errorBody);</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>throw new Error(`API call failed: ${response.status}`);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>}</p>
-<p class="p1"><span class="Apple-converted-space">                </span>const result = await response.json();</p>
-<p class="p2"><span class="Apple-converted-space">                </span></p>
-<p class="p1"><span class="Apple-converted-space">                </span>if (result.candidates &amp;&amp; result.candidates[0].content &amp;&amp; result.candidates[0].content.parts[0]) {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>const data = JSON.parse(result.candidates[0].content.parts[0].text);</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>currentExpenseDetails = data;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>shopNameInput.value = data.shopName || '';</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>shopLocationInput.value = data.shopLocation || '';</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>dateInput.value = data.date || new Date().toISOString().split('T')[0];</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>timeInput.value = data.time || '';</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>totalInput.value = data.total || '';</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>showScreen('confirmation-screen');</p>
-<p class="p1"><span class="Apple-converted-space">                </span>} else {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>throw new Error("Invalid response structure from Gemini API.");</p>
-<p class="p1"><span class="Apple-converted-space">                </span>}</p>
-<p class="p1"><span class="Apple-converted-space">            </span>} catch (error) {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>console.error("Error calling Gemini API:", error);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>showModal("Failed to read the receipt. Please try another image or enter details manually.");</p>
-<p class="p1"><span class="Apple-converted-space">                </span>resetForm();</p>
-<p class="p1"><span class="Apple-converted-space">                </span>showScreen('confirmation-screen'); // Still show form for manual entry</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>async function saveExpense() {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>if (!isAuthReady) { showModal("Authentication not ready. Please wait."); return; }</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>const expenseData = {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>shopName: shopNameInput.value.trim(),</p>
-<p class="p1"><span class="Apple-converted-space">                </span>shopLocation: shopLocationInput.value.trim(),</p>
-<p class="p1"><span class="Apple-converted-space">                </span>date: dateInput.value,</p>
-<p class="p1"><span class="Apple-converted-space">                </span>time: timeInput.value,</p>
-<p class="p1"><span class="Apple-converted-space">                </span>total: parseFloat(totalInput.value) || 0,</p>
-<p class="p1"><span class="Apple-converted-space">                </span>items: currentExpenseDetails?.items || [],</p>
-<p class="p1"><span class="Apple-converted-space">                </span>createdAt: new Date().toISOString()</p>
-<p class="p1"><span class="Apple-converted-space">            </span>};</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>if (!expenseData.shopName || !expenseData.date || !expenseData.total) {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>showModal("Please fill in at least Shop Name, Date, and Total.");</p>
-<p class="p1"><span class="Apple-converted-space">                </span>return;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>try {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>await addDoc(collection(db, `artifacts/${appId}/users/${userId}/expenses`), expenseData);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>showModal("Expense saved successfully!");</p>
-<p class="p1"><span class="Apple-converted-space">                </span>resetForm();</p>
-<p class="p1"><span class="Apple-converted-space">                </span>showScreen('home-screen');</p>
-<p class="p1"><span class="Apple-converted-space">                </span>updateNav('nav-home');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>} catch (error) {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>console.error("Error saving expense: ", error);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>showModal("Could not save the expense. Please try again.");</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>function resetForm() {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>shopNameInput.value = '';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>shopLocationInput.value = '';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>dateInput.value = '';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>timeInput.value = '';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>totalInput.value = '';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>receiptUploadInput.value = '';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>fileNameDisplay.textContent = '';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>currentExpenseDetails = null;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>function displayExpenseDetails(expense) {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const locationText = expense.shopLocation ? ` (${expense.shopLocation})` : '';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>detailModalTitle.textContent = `Details for ${expense.shopName}${locationText}`;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>detailModalList.innerHTML = '';</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>if (expense.items &amp;&amp; expense.items.length &gt; 0) {</p>
-<p class="p1"><span class="Apple-converted-space">                 </span>expense.items.forEach(item =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>const itemEl = document.createElement('div');</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>itemEl.className = 'flex justify-between items-center bg-gray-50 p-2 rounded-md';</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>itemEl.innerHTML = `</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;span class="text-gray-700"&gt;${item.name || 'Unnamed Item'}&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;span class="font-medium text-gray-900"&gt;£${(item.price || 0).toFixed(2)}&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>`;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>detailModalList.appendChild(itemEl);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>});</p>
-<p class="p1"><span class="Apple-converted-space">            </span>} else {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>detailModalList.innerHTML = '&lt;p class="text-center text-gray-500"&gt;No item details were saved for this expense.&lt;/p&gt;';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p1"><span class="Apple-converted-space">            </span>showModal(null, 'detail');</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>function fetchAndDisplayHistory() {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>if (unsubscribeHistory) unsubscribeHistory();</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>const expensesCol = collection(db, `artifacts/${appId}/users/${userId}/expenses`);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const q = query(expensesCol);</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>unsubscribeHistory = onSnapshot(q, (querySnapshot) =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>if (querySnapshot.empty) {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>historyList.innerHTML = '&lt;p class="text-center text-gray-500"&gt;No expenses logged yet.&lt;/p&gt;';</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>return;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>}</p>
-<p class="p2"><span class="Apple-converted-space">                </span></p>
-<p class="p1"><span class="Apple-converted-space">                </span>let expenses = [];</p>
-<p class="p1"><span class="Apple-converted-space">                </span>querySnapshot.forEach((doc) =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>expenses.push({ id: doc.id, ...doc.data() });</p>
-<p class="p1"><span class="Apple-converted-space">                </span>});</p>
-<p class="p2"><span class="Apple-converted-space">                </span></p>
-<p class="p1"><span class="Apple-converted-space">                </span>expenses.sort((a, b) =&gt; new Date(b.createdAt) - new Date(a.createdAt));</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">                </span>historyList.innerHTML = '';</p>
-<p class="p1"><span class="Apple-converted-space">                </span>expenses.forEach(expense =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>const expenseEl = document.createElement('div');</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>expenseEl.className = 'bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex justify-between items-center cursor-pointer hover:bg-gray-50 transition-colors';</p>
-<p class="p2"><span class="Apple-converted-space">                    </span></p>
-<p class="p1"><span class="Apple-converted-space">                    </span>const locationText = expense.shopLocation ? ` (${expense.shopLocation})` : '';</p>
-<p class="p2"><span class="Apple-converted-space">                    </span></p>
-<p class="p1"><span class="Apple-converted-space">                    </span>expenseEl.innerHTML = `</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;p class="font-semibold text-gray-800"&gt;${expense.shopName}${locationText}&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;p class="text-sm text-gray-500"&gt;${new Date(expense.date).toLocaleDateString()} at ${expense.time || ''}&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;p class="text-lg font-bold text-blue-600"&gt;£${(expense.total).toFixed(2)}&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>`;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>expenseEl.addEventListener('click', () =&gt; displayExpenseDetails(expense));</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>historyList.appendChild(expenseEl);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>});</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}, (error) =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>console.error("Error listening to history:", error);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>historyList.innerHTML = '&lt;p class="text-center text-red-500"&gt;Could not save history.&lt;/p&gt;';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>});</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>// --- Event Listeners Setup ---</p>
-<p class="p1"><span class="Apple-converted-space">        </span>function setupEventListeners() {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>homeNavBtn.addEventListener('click', () =&gt; { showScreen('home-screen'); updateNav('nav-home'); });</p>
-<p class="p1"><span class="Apple-converted-space">            </span>historyNavBtn.addEventListener('click', () =&gt; { showScreen('history-screen'); updateNav('nav-history'); });</p>
-<p class="p1"><span class="Apple-converted-space">            </span>receiptUploadInput.addEventListener('change', handleFileUpload);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>saveBtn.addEventListener('click', saveExpense);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>cancelBtn.addEventListener('click', () =&gt; { resetForm(); showScreen('home-screen'); });</p>
-<p class="p1"><span class="Apple-converted-space">            </span>alertModalCloseBtn.addEventListener('click', () =&gt; hideModal('alert'));</p>
-<p class="p1"><span class="Apple-converted-space">            </span>detailModalCloseBtn.addEventListener('click', () =&gt; hideModal('detail'));</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>// --- Initialization ---</p>
-<p class="p1"><span class="Apple-converted-space">        </span>async function initialize() {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const app = initializeApp(firebaseConfig);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>db = getFirestore(app);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>auth = getAuth(app);</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>setupEventListeners();</p>
-<p class="p1"><span class="Apple-converted-space">            </span>showScreen('home-screen');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>updateNav('nav-home');</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// For a real app, you would have a user login system.<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// For this beta, we will sign users in anonymously.</p>
-<p class="p1"><span class="Apple-converted-space">            </span>try {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>await signInAnonymously(auth);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>} catch (error) {</p>
-<p class="p1"><span class="Apple-converted-space">                 </span>console.error("Anonymous sign-in failed:", error);</p>
-<p class="p1"><span class="Apple-converted-space">                 </span>showModal("Authentication failed. The app might not work correctly.");</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p2"><br></p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>onAuthStateChanged(auth, (user) =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>if (user) {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>// User is signed in.</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>userId = user.uid;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>isAuthReady = true;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>console.log("User is authenticated with UID:", userId);</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>userIdValue.textContent = userId;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>userIdDisplay.style.display = 'block';</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>if (document.getElementById('history-screen').classList.contains('active-screen')) {</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>fetchAndDisplayHistory();</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>}</p>
-<p class="p1"><span class="Apple-converted-space">                </span>} else {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>// User is signed out.</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>isAuthReady = false;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>userId = null;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>userIdDisplay.style.display = 'none';</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>console.log("User is signed out.");</p>
-<p class="p1"><span class="Apple-converted-space">                </span>}</p>
-<p class="p1"><span class="Apple-converted-space">            </span>});</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>initialize();</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/script&gt;</p>
-<p class="p1">&lt;/body&gt;</p>
-<p class="p1">&lt;/html&gt;</p>
+<body class="bg-gray-50 text-gray-800">
+
+    <div id="app" class="max-w-lg mx-auto p-4 md:p-6 min-h-screen">
+
+        <!-- Header and Navigation -->
+        <header class="mb-6">
+            <h1 class="text-3xl font-bold text-gray-900 text-center">Expense Tracker</h1>
+            <p class="text-center text-gray-500">Log your supermarket receipts easily.</p>
+            <nav class="mt-4 flex justify-center bg-gray-200 rounded-lg p-1">
+                <button id="nav-home" class="nav-btn flex-1 py-2 px-4 text-sm font-semibold rounded-md transition-colors bg-white text-blue-600 shadow">Add Expense</button>
+                <button id="nav-history" class="nav-btn flex-1 py-2 px-4 text-sm font-semibold rounded-md transition-colors text-gray-600">History</button>
+            </nav>
+        </header>
+
+        <main>
+            <!-- Home Screen: Upload Receipt -->
+            <section id="home-screen" class="screen active-screen">
+                <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
+                    <h2 class="text-xl font-semibold mb-4">Upload a Receipt</h2>
+                    <label for="receipt-upload" class="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors">
+                        <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                            <svg class="w-10 h-10 mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-4-4V7a4 4 0 014-4h10a4 4 0 014 4v5a4 4 0 01-4 4H7z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 16v-2a2 2 0 00-2-2H10a2 2 0 00-2 2v2m-6 4h12m-6-4v4"></path></svg>
+                            <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Click to upload</span> or drag and drop</p>
+                            <p class="text-xs text-gray-500">PNG, JPG (MAX. 5MB)</p>
+                        </div>
+                        <input id="receipt-upload" type="file" class="hidden" accept="image/png, image/jpeg"/>
+                    </label>
+                    <p id="file-name" class="text-center text-sm text-gray-500 mt-2"></p>
+                </div>
+            </section>
+
+            <!-- Processing Screen -->
+            <section id="processing-screen" class="screen">
+                <div class="bg-white p-8 rounded-xl shadow-md border border-gray-200 text-center">
+                    <div class="spinner mx-auto mb-4"></div>
+                    <h2 class="text-xl font-semibold">Reading Receipt...</h2>
+                    <p class="text-gray-500">Extracting information, please wait.</p>
+                </div>
+            </section>
+
+            <!-- Confirmation Screen -->
+            <section id="confirmation-screen" class="screen">
+                <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
+                    <h2 class="text-xl font-semibold mb-4">Confirm Details</h2>
+                    <p class="text-sm text-gray-600 mb-4">The AI has extracted the items. Please confirm the main details below before saving.</p>
+                    <div class="space-y-4">
+                        <div>
+                            <label for="shop-name" class="block text-sm font-medium text-gray-700">Shop Name</label>
+                            <input type="text" id="shop-name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                        </div>
+                         <div>
+                            <label for="shop-location" class="block text-sm font-medium text-gray-700">Shop Location (e.g. Surbiton)</label>
+                            <input type="text" id="shop-location" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                        </div>
+                        <div>
+                            <label for="date" class="block text-sm font-medium text-gray-700">Date</label>
+                            <input type="date" id="date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                        </div>
+                        <div>
+                            <label for="time" class="block text-sm font-medium text-gray-700">Time</label>
+                            <input type="time" id="time" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                        </div>
+                        <div>
+                            <label for="total" class="block text-sm font-medium text-gray-700">Total Amount</label>
+                            <input type="number" step="0.01" id="total" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                        </div>
+                    </div>
+                    <div class="mt-6 flex justify-end space-x-3">
+                        <button id="cancel-btn" class="py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">Cancel</button>
+                        <button id="save-btn" class="py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700">Save Expense</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- History Screen -->
+            <section id="history-screen" class="screen">
+                <div id="history-list" class="space-y-3">
+                    <!-- History items will be injected here -->
+                    <p class="text-center text-gray-500">No expenses logged yet.</p>
+                </div>
+            </section>
+        </main>
+        
+        <!-- User ID display -->
+        <div id="user-id-display" class="fixed bottom-2 right-2 bg-gray-800 text-white text-xs p-2 rounded-lg shadow-lg" style="display: none;">
+            User ID: <span id="user-id-value"></span>
+        </div>
+    </div>
+
+    <!-- Alert Modal -->
+    <div id="alert-modal" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center p-4" style="display: none;">
+        <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-sm text-center">
+            <p id="alert-modal-message" class="text-lg mb-4"></p>
+            <button id="alert-modal-close-btn" class="bg-blue-600 text-white py-2 px-6 rounded-md hover:bg-blue-700">OK</button>
+        </div>
+    </div>
+    
+    <!-- Detail Modal -->
+    <div id="detail-modal" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center p-4" style="display: none;">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-md">
+            <div class="p-6">
+                <h3 class="text-xl font-semibold mb-4" id="detail-modal-title">Expense Details</h3>
+                <div id="detail-modal-list" class="max-h-80 overflow-y-auto space-y-2 pr-2">
+                    <!-- Item details will be injected here -->
+                </div>
+            </div>
+            <div class="bg-gray-100 px-6 py-3 flex justify-end">
+                <button id="detail-modal-close-btn" class="bg-gray-600 text-white py-2 px-6 rounded-md hover:bg-gray-700">Close</button>
+            </div>
+        </div>
+    </div>
+
+
+    <script type="module">
+        // Firebase Imports
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- App State ---
+        let db;
+        let auth;
+        let userId;
+        let isAuthReady = false;
+        let unsubscribeHistory = null;
+        let currentExpenseDetails = null;
+
+        // --- UI Elements ---
+        const screens = document.querySelectorAll('.screen');
+        const navBtns = document.querySelectorAll('.nav-btn');
+        const homeNavBtn = document.getElementById('nav-home');
+        const historyNavBtn = document.getElementById('nav-history');
+        const receiptUploadInput = document.getElementById('receipt-upload');
+        const fileNameDisplay = document.getElementById('file-name');
+        
+        const shopNameInput = document.getElementById('shop-name');
+        const shopLocationInput = document.getElementById('shop-location');
+        const dateInput = document.getElementById('date');
+        const timeInput = document.getElementById('time');
+        const totalInput = document.getElementById('total');
+
+        const saveBtn = document.getElementById('save-btn');
+        const cancelBtn = document.getElementById('cancel-btn');
+
+        const historyList = document.getElementById('history-list');
+        const userIdDisplay = document.getElementById('user-id-display');
+        const userIdValue = document.getElementById('user-id-value');
+        
+        const alertModal = document.getElementById('alert-modal');
+        const alertModalMessage = document.getElementById('alert-modal-message');
+        const alertModalCloseBtn = document.getElementById('alert-modal-close-btn');
+
+        const detailModal = document.getElementById('detail-modal');
+        const detailModalTitle = document.getElementById('detail-modal-title');
+        const detailModalList = document.getElementById('detail-modal-list');
+        const detailModalCloseBtn = document.getElementById('detail-modal-close-btn');
+
+        // --- Firebase Config ---
+        // For testing, you'll need to replace these with your own project's config values.
+               // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+	      const firebaseConfig = {
+  	    apiKey: "AIzaSyDmjj7Qc1nVFxT13UCOdDgdHkC6KhWEPPg",
+  	    authDomain: "dailyexpense-22a97.firebaseapp.com",
+  	    projectId: "dailyexpense-22a97",
+  	    storageBucket: "dailyexpense-22a97.firebasestorage.app",
+  	    messagingSenderId: "923676503604",
+  	    appId: "1:923676503604:web:8924e975ead398f2c86461",
+  	    measurementId: "G-H9QD9SSL3Y"
+	      };
+        const appId = 'expense-tracker-beta';
+
+        // --- Utility Functions ---
+        function showScreen(screenId) {
+            screens.forEach(screen => {
+                screen.classList.toggle('active-screen', screen.id === screenId);
+            });
+            if (screenId === 'history-screen' && isAuthReady) {
+                fetchAndDisplayHistory();
+            } else if (unsubscribeHistory) {
+                unsubscribeHistory();
+                unsubscribeHistory = null;
+            }
+        }
+        
+        function updateNav(activeBtnId) {
+             navBtns.forEach(btn => {
+                btn.classList.toggle('bg-white', btn.id === activeBtnId);
+                btn.classList.toggle('text-blue-600', btn.id === activeBtnId);
+                btn.classList.toggle('shadow', btn.id === activeBtnId);
+                btn.classList.toggle('text-gray-600', btn.id !== activeBtnId);
+             });
+        }
+
+        function showModal(message, type = 'alert') {
+            if (type === 'alert') {
+                alertModalMessage.textContent = message;
+                alertModal.style.display = 'flex';
+            } else if (type === 'detail') {
+                 detailModal.style.display = 'flex';
+            }
+        }
+
+        function hideModal(type = 'alert') {
+            if (type === 'alert') {
+                alertModal.style.display = 'none';
+            } else if (type === 'detail') {
+                detailModal.style.display = 'none';
+            }
+        }
+
+        // --- Core Application Logic ---
+        function toBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result.split(',')[1]);
+                reader.onerror = error => reject(error);
+            });
+        }
+        
+        async function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            fileNameDisplay.textContent = `Selected: ${file.name}`;
+            showScreen('processing-screen');
+            
+            try {
+                const base64Image = await toBase64(file);
+                await extractDataFromImage(base64Image);
+            } catch (error) {
+                console.error("Error processing file:", error);
+                showModal("Could not process the image. Please try again.");
+                showScreen('home-screen');
+            }
+             // Reset file input to allow re-uploading the same file
+            receiptUploadInput.value = '';
+        }
+
+        async function extractDataFromImage(base64ImageData) {
+            const prompt = `
+                Analyze this receipt image. The user is currently in Surbiton, England. Extract the following information and return it as a single JSON object:
+                1. "shopName": The name of the store or shop (e.g., "M&S", "Tesco").
+                2. "shopLocation": The specific branch or location of the shop (e.g., "Surbiton", "Kingston upon Thames"). If not explicitly mentioned, you can infer it might be Surbiton.
+                3. "date": The date of the transaction in YYYY-MM-DD format.
+                4. "time": The time of the transaction in HH:MM (24-hour) format.
+                5. "total": The final total amount as a number, without currency symbols.
+                6. "items": An array of objects, where each object represents a purchased item. Each item object should have two properties: "name" (string) and "price" (number). Do not include items that are not actual products like "subtotal", "vat", "bag charge", or "total".
+
+                If any top-level piece of information is not found, use "null" for its value. If no items can be found, return an empty array for the "items" property.
+            `;
+            const payload = {
+                contents: [{ 
+                    parts: [
+                        { text: prompt }, 
+                        { inlineData: { mimeType: "image/jpeg", data: base64ImageData } }
+                    ] 
+                }],
+                generationConfig: { "responseMimeType": "application/json" }
+            };
+            // For testing, you must get your own Gemini API Key from Google AI Studio.
+            const apiKey = "AIzaSyBm4vJeUrk7SxKHY2aN0DqATttKeWnV_Ww";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+            try {
+                const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                if (!response.ok) {
+                    const errorBody = await response.text();
+                    console.error("API Error Response:", errorBody);
+                    throw new Error(`API call failed: ${response.status}`);
+                }
+                const result = await response.json();
+                
+                if (result.candidates && result.candidates[0].content && result.candidates[0].content.parts[0]) {
+                    const data = JSON.parse(result.candidates[0].content.parts[0].text);
+                    currentExpenseDetails = data;
+                    shopNameInput.value = data.shopName || '';
+                    shopLocationInput.value = data.shopLocation || '';
+                    dateInput.value = data.date || new Date().toISOString().split('T')[0];
+                    timeInput.value = data.time || '';
+                    totalInput.value = data.total || '';
+                    showScreen('confirmation-screen');
+                } else {
+                    throw new Error("Invalid response structure from Gemini API.");
+                }
+            } catch (error) {
+                console.error("Error calling Gemini API:", error);
+                showModal("Failed to read the receipt. Please try another image or enter details manually.");
+                resetForm();
+                showScreen('confirmation-screen'); // Still show form for manual entry
+            }
+        }
+        
+        async function saveExpense() {
+            if (!isAuthReady) { showModal("Authentication not ready. Please wait."); return; }
+
+            const expenseData = {
+                shopName: shopNameInput.value.trim(),
+                shopLocation: shopLocationInput.value.trim(),
+                date: dateInput.value,
+                time: timeInput.value,
+                total: parseFloat(totalInput.value) || 0,
+                items: currentExpenseDetails?.items || [],
+                createdAt: new Date().toISOString()
+            };
+
+            if (!expenseData.shopName || !expenseData.date || !expenseData.total) {
+                showModal("Please fill in at least Shop Name, Date, and Total.");
+                return;
+            }
+            
+            try {
+                await addDoc(collection(db, `artifacts/${appId}/users/${userId}/expenses`), expenseData);
+                showModal("Expense saved successfully!");
+                resetForm();
+                showScreen('home-screen');
+                updateNav('nav-home');
+            } catch (error) {
+                console.error("Error saving expense: ", error);
+                showModal("Could not save the expense. Please try again.");
+            }
+        }
+
+        function resetForm() {
+            shopNameInput.value = '';
+            shopLocationInput.value = '';
+            dateInput.value = '';
+            timeInput.value = '';
+            totalInput.value = '';
+            receiptUploadInput.value = '';
+            fileNameDisplay.textContent = '';
+            currentExpenseDetails = null;
+        }
+
+        function displayExpenseDetails(expense) {
+            const locationText = expense.shopLocation ? ` (${expense.shopLocation})` : '';
+            detailModalTitle.textContent = `Details for ${expense.shopName}${locationText}`;
+            detailModalList.innerHTML = '';
+            
+            if (expense.items && expense.items.length > 0) {
+                 expense.items.forEach(item => {
+                    const itemEl = document.createElement('div');
+                    itemEl.className = 'flex justify-between items-center bg-gray-50 p-2 rounded-md';
+                    itemEl.innerHTML = `
+                        <span class="text-gray-700">${item.name || 'Unnamed Item'}</span>
+                        <span class="font-medium text-gray-900">£${(item.price || 0).toFixed(2)}</span>
+                    `;
+                    detailModalList.appendChild(itemEl);
+                });
+            } else {
+                detailModalList.innerHTML = '<p class="text-center text-gray-500">No item details were saved for this expense.</p>';
+            }
+            showModal(null, 'detail');
+        }
+
+        function fetchAndDisplayHistory() {
+            if (unsubscribeHistory) unsubscribeHistory();
+
+            const expensesCol = collection(db, `artifacts/${appId}/users/${userId}/expenses`);
+            const q = query(expensesCol);
+
+            unsubscribeHistory = onSnapshot(q, (querySnapshot) => {
+                if (querySnapshot.empty) {
+                    historyList.innerHTML = '<p class="text-center text-gray-500">No expenses logged yet.</p>';
+                    return;
+                }
+                
+                let expenses = [];
+                querySnapshot.forEach((doc) => {
+                    expenses.push({ id: doc.id, ...doc.data() });
+                });
+                
+                expenses.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+                historyList.innerHTML = '';
+                expenses.forEach(expense => {
+                    const expenseEl = document.createElement('div');
+                    expenseEl.className = 'bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex justify-between items-center cursor-pointer hover:bg-gray-50 transition-colors';
+                    
+                    const locationText = expense.shopLocation ? ` (${expense.shopLocation})` : '';
+                    
+                    expenseEl.innerHTML = `
+                        <div>
+                            <p class="font-semibold text-gray-800">${expense.shopName}${locationText}</p>
+                            <p class="text-sm text-gray-500">${new Date(expense.date).toLocaleDateString()} at ${expense.time || ''}</p>
+                        </div>
+                        <p class="text-lg font-bold text-blue-600">£${(expense.total).toFixed(2)}</p>
+                    `;
+                    expenseEl.addEventListener('click', () => displayExpenseDetails(expense));
+                    historyList.appendChild(expenseEl);
+                });
+            }, (error) => {
+                console.error("Error listening to history:", error);
+                historyList.innerHTML = '<p class="text-center text-red-500">Could not save history.</p>';
+            });
+        }
+
+
+        // --- Event Listeners Setup ---
+        function setupEventListeners() {
+            homeNavBtn.addEventListener('click', () => { showScreen('home-screen'); updateNav('nav-home'); });
+            historyNavBtn.addEventListener('click', () => { showScreen('history-screen'); updateNav('nav-history'); });
+            receiptUploadInput.addEventListener('change', handleFileUpload);
+            saveBtn.addEventListener('click', saveExpense);
+            cancelBtn.addEventListener('click', () => { resetForm(); showScreen('home-screen'); });
+            alertModalCloseBtn.addEventListener('click', () => hideModal('alert'));
+            detailModalCloseBtn.addEventListener('click', () => hideModal('detail'));
+        }
+
+        // --- Initialization ---
+        async function initialize() {
+            const app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+
+            setupEventListeners();
+            showScreen('home-screen');
+            updateNav('nav-home');
+            
+            // For a real app, you would have a user login system. 
+            // For this beta, we will sign users in anonymously.
+            try {
+                await signInAnonymously(auth);
+            } catch (error) {
+                 console.error("Anonymous sign-in failed:", error);
+                 showModal("Authentication failed. The app might not work correctly.");
+            }
+
+
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    // User is signed in.
+                    userId = user.uid;
+                    isAuthReady = true;
+                    console.log("User is authenticated with UID:", userId);
+                    userIdValue.textContent = userId;
+                    userIdDisplay.style.display = 'block';
+                    if (document.getElementById('history-screen').classList.contains('active-screen')) {
+                        fetchAndDisplayHistory();
+                    }
+                } else {
+                    // User is signed out.
+                    isAuthReady = false;
+                    userId = null;
+                    userIdDisplay.style.display = 'none';
+                    console.log("User is signed out.");
+                }
+            });
+        }
+
+        initialize();
+
+    </script>
 </body>
 </html>
