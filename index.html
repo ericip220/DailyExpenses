@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -117,7 +117,7 @@
     </div>
 
     <!-- Alert Modal -->
-    <div id="alert-modal" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center p-4" style="display: none;">
+    <div id="alert-modal" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center p-4 z-50" style="display: none;">
         <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-sm text-center">
             <p id="alert-modal-message" class="text-lg mb-4"></p>
             <button id="alert-modal-close-btn" class="bg-blue-600 text-white py-2 px-6 rounded-md hover:bg-blue-700">OK</button>
@@ -125,7 +125,7 @@
     </div>
     
     <!-- Detail Modal -->
-    <div id="detail-modal" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center p-4" style="display: none;">
+    <div id="detail-modal" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center p-4 z-50" style="display: none;">
         <div class="bg-white rounded-lg shadow-xl w-full max-w-md">
             <div class="p-6">
                 <h3 class="text-xl font-semibold mb-4" id="detail-modal-title">Expense Details</h3>
@@ -139,12 +139,24 @@
         </div>
     </div>
 
+    <!-- Delete Confirmation Modal -->
+    <div id="delete-confirm-modal" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center p-4 z-50" style="display: none;">
+        <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-sm text-center">
+            <h3 class="text-lg font-semibold mb-2">Are you sure?</h3>
+            <p id="delete-confirm-message" class="text-gray-600 mb-6">This expense will be permanently deleted. This action cannot be undone.</p>
+            <div class="flex justify-center space-x-4">
+                 <button id="delete-cancel-btn" class="flex-1 py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">Cancel</button>
+                 <button id="delete-confirm-btn" class="flex-1 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700">Delete</button>
+            </div>
+        </div>
+    </div>
+
 
     <script type="module">
         // Firebase Imports
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // --- App State ---
         let db;
@@ -153,6 +165,7 @@
         let isAuthReady = false;
         let unsubscribeHistory = null;
         let currentExpenseDetails = null;
+        let expenseIdToDelete = null;
 
         // --- UI Elements ---
         const screens = document.querySelectorAll('.screen');
@@ -184,19 +197,13 @@
         const detailModalList = document.getElementById('detail-modal-list');
         const detailModalCloseBtn = document.getElementById('detail-modal-close-btn');
 
+        const deleteConfirmModal = document.getElementById('delete-confirm-modal');
+        const deleteConfirmBtn = document.getElementById('delete-confirm-btn');
+        const deleteCancelBtn = document.getElementById('delete-cancel-btn');
+
         // --- Firebase Config ---
-        // For testing, you'll need to replace these with your own project's config values.
-               // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-	      const firebaseConfig = {
-  	    apiKey: "AIzaSyDmjj7Qc1nVFxT13UCOdDgdHkC6KhWEPPg",
-  	    authDomain: "dailyexpense-22a97.firebaseapp.com",
-  	    projectId: "dailyexpense-22a97",
-  	    storageBucket: "dailyexpense-22a97.firebasestorage.app",
-  	    messagingSenderId: "923676503604",
-  	    appId: "1:923676503604:web:8924e975ead398f2c86461",
-  	    measurementId: "G-H9QD9SSL3Y"
-	      };
-        const appId = 'expense-tracker-beta';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : { apiKey: "DEMO_KEY", authDomain: "demo.firebaseapp.com", projectId: "demo-project" };
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
 
         // --- Utility Functions ---
         function showScreen(screenId) {
@@ -226,6 +233,8 @@
                 alertModal.style.display = 'flex';
             } else if (type === 'detail') {
                  detailModal.style.display = 'flex';
+            } else if (type === 'deleteConfirm') {
+                 deleteConfirmModal.style.display = 'flex';
             }
         }
 
@@ -234,6 +243,8 @@
                 alertModal.style.display = 'none';
             } else if (type === 'detail') {
                 detailModal.style.display = 'none';
+            } else if (type === 'deleteConfirm') {
+                deleteConfirmModal.style.display = 'none';
             }
         }
 
@@ -271,7 +282,7 @@
                 Analyze this receipt image. The user is currently in Surbiton, England. Extract the following information and return it as a single JSON object:
                 1. "shopName": The name of the store or shop (e.g., "M&S", "Tesco").
                 2. "shopLocation": The specific branch or location of the shop (e.g., "Surbiton", "Kingston upon Thames"). If not explicitly mentioned, you can infer it might be Surbiton.
-                3. "date": The date of the transaction in YYYY-MM-DD format.
+                3. "date": The date of the transaction in<x_bin_42>-MM-DD format.
                 4. "time": The time of the transaction in HH:MM (24-hour) format.
                 5. "total": The final total amount as a number, without currency symbols.
                 6. "items": An array of objects, where each object represents a purchased item. Each item object should have two properties: "name" (string) and "price" (number). Do not include items that are not actual products like "subtotal", "vat", "bag charge", or "total".
@@ -287,8 +298,7 @@
                 }],
                 generationConfig: { "responseMimeType": "application/json" }
             };
-            // For testing, you must get your own Gemini API Key from Google AI Studio.
-            const apiKey = "AIzaSyBm4vJeUrk7SxKHY2aN0DqATttKeWnV_Ww";
+            const apiKey = "";
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
             try {
@@ -382,6 +392,29 @@
             showModal(null, 'detail');
         }
 
+        function promptForDelete(id) {
+            expenseIdToDelete = id;
+            showModal(null, 'deleteConfirm');
+        }
+
+        async function deleteExpense() {
+            if (!expenseIdToDelete || !isAuthReady) {
+                showModal("Error: Cannot delete expense. Please try again.");
+                return;
+            }
+
+            try {
+                await deleteDoc(doc(db, `artifacts/${appId}/users/${userId}/expenses`, expenseIdToDelete));
+                // The onSnapshot listener will automatically update the UI.
+            } catch (error) {
+                console.error("Error deleting document:", error);
+                showModal("There was a problem deleting the expense.");
+            } finally {
+                hideModal('deleteConfirm');
+                expenseIdToDelete = null;
+            }
+        }
+
         function fetchAndDisplayHistory() {
             if (unsubscribeHistory) unsubscribeHistory();
 
@@ -404,23 +437,42 @@
                 historyList.innerHTML = '';
                 expenses.forEach(expense => {
                     const expenseEl = document.createElement('div');
-                    expenseEl.className = 'bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex justify-between items-center cursor-pointer hover:bg-gray-50 transition-colors';
+                    expenseEl.className = 'bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex justify-between items-center';
                     
                     const locationText = expense.shopLocation ? ` (${expense.shopLocation})` : '';
                     
-                    expenseEl.innerHTML = `
-                        <div>
-                            <p class="font-semibold text-gray-800">${expense.shopName}${locationText}</p>
-                            <p class="text-sm text-gray-500">${new Date(expense.date).toLocaleDateString()} at ${expense.time || ''}</p>
-                        </div>
-                        <p class="text-lg font-bold text-blue-600">£${(expense.total).toFixed(2)}</p>
+                    const mainContent = document.createElement('div');
+                    mainContent.className = 'flex-grow cursor-pointer';
+                    mainContent.innerHTML = `
+                        <p class="font-semibold text-gray-800">${expense.shopName}${locationText}</p>
+                        <p class="text-sm text-gray-500">${new Date(expense.date).toLocaleDateString()} at ${expense.time || ''}</p>
                     `;
-                    expenseEl.addEventListener('click', () => displayExpenseDetails(expense));
+                    mainContent.addEventListener('click', (e) => {
+                        e.stopPropagation(); // Prevent the delete button click from triggering this
+                        displayExpenseDetails(expense);
+                    });
+                    
+                    const totalEl = document.createElement('p');
+                    totalEl.className = 'text-lg font-bold text-blue-600 ml-4';
+                    totalEl.textContent = `£${(expense.total).toFixed(2)}`;
+                    
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.className = 'ml-4 p-2 rounded-full hover:bg-red-100 text-gray-400 hover:text-red-600 transition-colors';
+                    deleteBtn.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`;
+                    deleteBtn.title = "Delete Expense";
+                    deleteBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        promptForDelete(expense.id);
+                    });
+
+                    expenseEl.appendChild(mainContent);
+                    expenseEl.appendChild(totalEl);
+                    expenseEl.appendChild(deleteBtn);
                     historyList.appendChild(expenseEl);
                 });
             }, (error) => {
                 console.error("Error listening to history:", error);
-                historyList.innerHTML = '<p class="text-center text-red-500">Could not save history.</p>';
+                historyList.innerHTML = '<p class="text-center text-red-500">Could not load history.</p>';
             });
         }
 
@@ -434,6 +486,8 @@
             cancelBtn.addEventListener('click', () => { resetForm(); showScreen('home-screen'); });
             alertModalCloseBtn.addEventListener('click', () => hideModal('alert'));
             detailModalCloseBtn.addEventListener('click', () => hideModal('detail'));
+            deleteConfirmBtn.addEventListener('click', deleteExpense);
+            deleteCancelBtn.addEventListener('click', () => hideModal('deleteConfirm'));
         }
 
         // --- Initialization ---
@@ -445,34 +499,35 @@
             setupEventListeners();
             showScreen('home-screen');
             updateNav('nav-home');
-            
-            // For a real app, you would have a user login system. 
-            // For this beta, we will sign users in anonymously.
-            try {
-                await signInAnonymously(auth);
-            } catch (error) {
-                 console.error("Anonymous sign-in failed:", error);
-                 showModal("Authentication failed. The app might not work correctly.");
-            }
 
-
-            onAuthStateChanged(auth, (user) => {
+            // Set up the listener first to handle all auth state changes.
+            onAuthStateChanged(auth, async (user) => {
                 if (user) {
-                    // User is signed in.
+                    // User is signed in and ready.
                     userId = user.uid;
                     isAuthReady = true;
                     console.log("User is authenticated with UID:", userId);
                     userIdValue.textContent = userId;
                     userIdDisplay.style.display = 'block';
+                    // If the user is on the history screen when auth completes, fetch data.
                     if (document.getElementById('history-screen').classList.contains('active-screen')) {
                         fetchAndDisplayHistory();
                     }
                 } else {
-                    // User is signed out.
-                    isAuthReady = false;
-                    userId = null;
-                    userIdDisplay.style.display = 'none';
-                    console.log("User is signed out.");
+                    // No user is signed in. Attempt to sign in.
+                    console.log("User not signed in. Attempting anonymous sign-in...");
+                    try {
+                        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                            await signInWithCustomToken(auth, __initial_auth_token);
+                        } else {
+                            await signInAnonymously(auth);
+                        }
+                        // After successful sign-in, onAuthStateChanged will run again with the new user object.
+                    } catch (error) {
+                        console.error("Sign-in failed:", error);
+                        showModal("Authentication failed. The app cannot save data.");
+                        isAuthReady = false;
+                    }
                 }
             });
         }
