@@ -212,7 +212,9 @@
       appId: "1:923676503604:web:8924e975ead398f2c86461",
       measurementId: "G-H9QD9SSL3Y"
         };
-        
+
+        // **BUG FIX**: Added the appId definition back in.
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';        
         // --- Utility Functions ---
         function showScreen(screenId) {
             screens.forEach(screen => {
