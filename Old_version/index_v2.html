@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Expense Tracker</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
@@ -58,17 +57,17 @@
         </section>
 
         <!-- Main Application Screen -->
-        <div id="main-app">
+        <div id="main-app" class="hidden">
             <!-- Header and Navigation -->
             <header class="mb-6">
                  <div class="flex justify-between items-center mb-1">
                     <h1 class="text-3xl font-bold text-gray-900">Expense Tracker</h1>
+                    <button id="logout-btn" class="text-sm text-blue-600 hover:text-blue-800 font-semibold">Logout</button>
                  </div>
                 <p class="text-gray-500">Log your supermarket receipts easily.</p>
                 <nav class="mt-4 flex justify-center bg-gray-200 rounded-lg p-1">
                     <button id="nav-home" class="nav-btn flex-1 py-2 px-4 text-sm font-semibold rounded-md transition-colors bg-white text-blue-600 shadow">Add Expense</button>
                     <button id="nav-history" class="nav-btn flex-1 py-2 px-4 text-sm font-semibold rounded-md transition-colors text-gray-600">History</button>
-                    <button id="nav-summary" class="nav-btn flex-1 py-2 px-4 text-sm font-semibold rounded-md transition-colors text-gray-600">Summary</button>
                 </nav>
             </header>
 
@@ -104,11 +103,26 @@
                         <h2 class="text-xl font-semibold mb-4">Confirm Details</h2>
                         <p class="text-sm text-gray-600 mb-4">The AI has extracted the items. Please confirm the main details below before saving.</p>
                         <div class="space-y-4">
-                            <input type="text" id="shop-name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" placeholder="Shop Name">
-                             <input type="text" id="shop-location" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" placeholder="Shop Location (e.g. Surbiton)">
-                            <input type="date" id="date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
-                            <input type="time" id="time" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
-                             <input type="number" step="0.01" id="total" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" placeholder="Total Amount">
+                            <div>
+                                <label for="shop-name" class="block text-sm font-medium text-gray-700">Shop Name</label>
+                                <input type="text" id="shop-name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                            </div>
+                             <div>
+                                <label for="shop-location" class="block text-sm font-medium text-gray-700">Shop Location (e.g. Surbiton)</label>
+                                <input type="text" id="shop-location" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                            </div>
+                            <div>
+                                <label for="date" class="block text-sm font-medium text-gray-700">Date</label>
+                                <input type="date" id="date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                            </div>
+                            <div>
+                                <label for="time" class="block text-sm font-medium text-gray-700">Time</label>
+                                <input type="time" id="time" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                            </div>
+                            <div>
+                                <label for="total" class="block text-sm font-medium text-gray-700">Total Amount</label>
+                                <input type="number" step="0.01" id="total" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                            </div>
                         </div>
                         <div class="mt-6 flex justify-end space-x-3">
                             <button id="cancel-btn" class="py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">Cancel</button>
@@ -121,36 +135,6 @@
                 <section id="history-screen" class="screen">
                     <div id="history-list" class="space-y-3">
                         <!-- History items will be injected here -->
-                    </div>
-                </section>
-                
-                <!-- Summary Screen -->
-                <section id="summary-screen" class="screen">
-                    <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
-                        <h2 class="text-xl font-semibold mb-2">Spending Summary</h2>
-                        <div class="mb-4 flex justify-center bg-gray-100 rounded-lg p-1">
-                             <button id="filter-1m" class="filter-btn flex-1 py-2 px-4 text-sm font-semibold rounded-md transition-colors">1 Month</button>
-                             <button id="filter-2m" class="filter-btn flex-1 py-2 px-4 text-sm font-semibold rounded-md transition-colors">2 Months</button>
-                             <button id="filter-3m" class="filter-btn flex-1 py-2 px-4 text-sm font-semibold rounded-md transition-colors">3 Months</button>
-                        </div>
-                        
-                        <div id="summary-details" class="hidden">
-                            <div class="mb-4 text-center">
-                                <p class="text-gray-600">Total Spent in Period:</p>
-                                <p id="summary-total" class="text-3xl font-bold text-gray-900">£0.00</p>
-                            </div>
-                            <div id="summary-list" class="mt-4 space-y-2">
-                                <!-- Per-shop summary will be injected here -->
-                            </div>
-                            <hr class="my-4">
-                        </div>
-
-                        <div id="chart-container" class="relative h-80">
-                            <canvas id="expense-chart"></canvas>
-                             <div id="no-chart-data" class="hidden absolute inset-0 flex items-center justify-center">
-                                <p class="text-gray-500">No spending data for this period.</p>
-                            </div>
-                        </div>
                     </div>
                 </section>
             </main>
@@ -196,19 +180,17 @@
     <script type="module">
         // Firebase Imports
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, doc, deleteDoc, getDocs, where } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // --- App State ---
         let db;
         let auth;
         let userId;
-        let isAuthReady = false;
         let unsubscribeHistory = null;
         let currentExpenseDetails = null;
         let expenseIdToDelete = null;
-        let allExpenses = [];
-        let expenseChart = null;
+        // **BUG FIX**: Moved appId to the global scope so all functions can access it.
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
 
         // --- UI Elements ---
@@ -218,7 +200,7 @@
         
         const emailInput = document.getElementById('email');
         const passwordInput = document.getElementById('password');
-        const Btn = document.getElementById('login-btn');
+        const loginBtn = document.getElementById('login-btn');
         const signupBtn = document.getElementById('signup-btn');
         const logoutBtn = document.getElementById('logout-btn');
 
@@ -226,8 +208,6 @@
         const navBtns = document.querySelectorAll('.nav-btn');
         const homeNavBtn = document.getElementById('nav-home');
         const historyNavBtn = document.getElementById('nav-history');
-        const summaryNavBtn = document.getElementById('nav-summary');
-        
         const receiptUploadInput = document.getElementById('receipt-upload');
         const fileNameDisplay = document.getElementById('file-name');
         
@@ -255,14 +235,7 @@
         const deleteConfirmBtn = document.getElementById('delete-confirm-btn');
         const deleteCancelBtn = document.getElementById('delete-cancel-btn');
 
-        const summaryDetails = document.getElementById('summary-details');
-        const summaryTotalEl = document.getElementById('summary-total');
-        const summaryListEl = document.getElementById('summary-list');
-        const chartContainer = document.getElementById('chart-container');
-        const noChartData = document.getElementById('no-chart-data');
-        const chartCanvas = document.getElementById('expense-chart');
-        const filterBtns = document.querySelectorAll('.filter-btn');
-
+        // --- Firebase Config ---
         // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 	    const firebaseConfig = {
   	    apiKey: "AIzaSyDmjj7Qc1nVFxT13UCOdDgdHkC6KhWEPPg",
@@ -272,17 +245,15 @@
   	    messagingSenderId: "923676503604",
   	    appId: "1:923676503604:web:8924e975ead398f2c86461",
   	    measurementId: "G-H9QD9SSL3Y"
-        };
+	    };
 
         // --- Utility Functions ---
         function showMainAppScreen(screenId) {
             mainAppScreens.forEach(screen => {
                 screen.classList.toggle('active-screen', screen.id === screenId);
             });
-            if (screenId === 'history-screen' && isAuthReady) {
+            if (screenId === 'history-screen' && userId) {
                 fetchAndDisplayHistory();
-            } else if (screenId === 'summary-screen' && isAuthReady) {
-                loadSummaryData();
             } else if (unsubscribeHistory) {
                 unsubscribeHistory();
                 unsubscribeHistory = null;
@@ -318,8 +289,8 @@
                 deleteConfirmModal.style.display = 'none';
             }
         }
-
-                // --- Authentication Logic ---
+        
+        // --- Authentication Logic ---
         
         const handleSignUp = async () => {
             const email = emailInput.value;
@@ -371,6 +342,7 @@
             }
         };
 
+
         // --- Core Application Logic ---
         function toBase64(file) {
             return new Promise((resolve, reject) => {
@@ -396,13 +368,29 @@
                 showModal("Could not process the image. Please try again.");
                 showMainAppScreen('home-screen');
             }
+             // Reset file input to allow re-uploading the same file
             receiptUploadInput.value = '';
         }
 
         async function extractDataFromImage(base64ImageData) {
-            const prompt = `Analyze this receipt image. Extract shopName, shopLocation, date (YYYY-MM-DD), time (HH:MM), total (number), and an array of items with name and price. Return a JSON object.`;
+            const prompt = `
+                Analyze this receipt image. The user is currently in Surbiton, England. Extract the following information and return it as a single JSON object:
+                1. "shopName": The name of the store or shop (e.g., "M&S", "Tesco").
+                2. "shopLocation": The specific branch or location of the shop (e.g., "Surbiton", "Kingston upon Thames"). If not explicitly mentioned, you can infer it might be Surbiton.
+                3. "date": The date of the transaction in<x_bin_42>-MM-DD format.
+                4. "time": The time of the transaction in HH:MM (24-hour) format.
+                5. "total": The final total amount as a number, without currency symbols.
+                6. "items": An array of objects, where each object represents a purchased item. Each item object should have two properties: "name" (string) and "price" (number). Do not include items that are not actual products like "subtotal", "vat", "bag charge", or "total".
+
+                If any top-level piece of information is not found, use "null" for its value. If no items can be found, return an empty array for the "items" property.
+            `;
             const payload = {
-                contents: [{ parts: [{ text: prompt }, { inlineData: { mimeType: "image/jpeg", data: base64ImageData } }] }],
+                contents: [{ 
+                    parts: [
+                        { text: prompt }, 
+                        { inlineData: { mimeType: "image/jpeg", data: base64ImageData } }
+                    ] 
+                }],
                 generationConfig: { "responseMimeType": "application/json" }
             };
             const apiKey = "AIzaSyBm4vJeUrk7SxKHY2aN0DqATttKeWnV_Ww";
@@ -410,7 +398,11 @@
 
             try {
                 const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-                if (!response.ok) throw new Error(`API call failed: ${response.status}`);
+                if (!response.ok) {
+                    const errorBody = await response.text();
+                    console.error("API Error Response:", errorBody);
+                    throw new Error(`API call failed: ${response.status}`);
+                }
                 const result = await response.json();
                 
                 if (result.candidates && result.candidates[0].content && result.candidates[0].content.parts[0]) {
@@ -428,15 +420,16 @@
             } catch (error) {
                 console.error("Error calling Gemini API:", error);
                 showModal("Failed to read the receipt. Please try another image or enter details manually.");
-                resetForm();
-                showMainAppScreen('confirmation-screen');
+                // Revert to home screen on error, allowing user to try again or input manually.
+                showMainAppScreen('home-screen');
             }
         }
         
         async function saveExpense() {
-            if (!isAuthReady) { showModal("Authentication not ready. Please wait."); return; }
+            if (!userId) { showModal("You must be logged in to save expenses."); return; }
+
             const expenseData = {
-                shopName: shopNameInput.value.trim() || 'Unknown Shop',
+                shopName: shopNameInput.value.trim(),
                 shopLocation: shopLocationInput.value.trim(),
                 date: dateInput.value,
                 time: timeInput.value,
@@ -444,10 +437,12 @@
                 items: currentExpenseDetails?.items || [],
                 createdAt: new Date().toISOString()
             };
-            if (!expenseData.date || !expenseData.total) {
-                showModal("Please fill in at least Date and Total.");
+
+            if (!expenseData.shopName || !expenseData.date || !expenseData.total) {
+                showModal("Please fill in at least Shop Name, Date, and Total.");
                 return;
             }
+            
             try {
                 await addDoc(collection(db, `artifacts/${appId}/users/${userId}/expenses`), expenseData);
                 showModal("Expense saved successfully!");
@@ -498,7 +493,11 @@
         }
 
         async function deleteExpense() {
-            if (!expenseIdToDelete || !isAuthReady) return;
+            if (!expenseIdToDelete || !userId) {
+                showModal("Error: Cannot delete expense. Please try again.");
+                return;
+            }
+
             try {
                 await deleteDoc(doc(db, `artifacts/${appId}/users/${userId}/expenses`, expenseIdToDelete));
             } catch (error) {
@@ -512,31 +511,40 @@
 
         function fetchAndDisplayHistory() {
             if (unsubscribeHistory) unsubscribeHistory();
-            if (!isAuthReady) return;
+
             const expensesCol = collection(db, `artifacts/${appId}/users/${userId}/expenses`);
             const q = query(expensesCol);
 
             unsubscribeHistory = onSnapshot(q, (querySnapshot) => {
-                const expenses = [];
-                querySnapshot.forEach((doc) => {
-                    expenses.push({ id: doc.id, ...doc.data() });
-                });
-                allExpenses = expenses.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-                
-                if (allExpenses.length === 0) {
+                if (querySnapshot.empty) {
                     historyList.innerHTML = '<p class="text-center text-gray-500">No expenses logged yet.</p>';
                     return;
                 }
+                
+                let expenses = [];
+                querySnapshot.forEach((doc) => {
+                    expenses.push({ id: doc.id, ...doc.data() });
+                });
+                
+                expenses.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
                 historyList.innerHTML = '';
-                allExpenses.forEach(expense => {
+                expenses.forEach(expense => {
                     const expenseEl = document.createElement('div');
                     expenseEl.className = 'bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex justify-between items-center';
+                    
                     const locationText = expense.shopLocation ? ` (${expense.shopLocation})` : '';
+                    
                     const mainContent = document.createElement('div');
                     mainContent.className = 'flex-grow cursor-pointer';
-                    mainContent.innerHTML = `<p class="font-semibold text-gray-800">${expense.shopName}${locationText}</p><p class="text-sm text-gray-500">${new Date(expense.date).toLocaleDateString()} at ${expense.time || ''}</p>`;
-                    mainContent.addEventListener('click', (e) => displayExpenseDetails(expense));
+                    mainContent.innerHTML = `
+                        <p class="font-semibold text-gray-800">${expense.shopName}${locationText}</p>
+                        <p class="text-sm text-gray-500">${new Date(expense.date).toLocaleDateString()} at ${expense.time || ''}</p>
+                    `;
+                    mainContent.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        displayExpenseDetails(expense);
+                    });
                     
                     const totalEl = document.createElement('p');
                     totalEl.className = 'text-lg font-bold text-blue-600 ml-4';
@@ -544,8 +552,12 @@
                     
                     const deleteBtn = document.createElement('button');
                     deleteBtn.className = 'ml-4 p-2 rounded-full hover:bg-red-100 text-gray-400 hover:text-red-600 transition-colors';
-                    deleteBtn.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`;
-                    deleteBtn.addEventListener('click', (e) => { e.stopPropagation(); promptForDelete(expense.id); });
+                    deleteBtn.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`;
+                    deleteBtn.title = "Delete Expense";
+                    deleteBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        promptForDelete(expense.id);
+                    });
 
                     expenseEl.appendChild(mainContent);
                     expenseEl.appendChild(totalEl);
@@ -555,115 +567,6 @@
             }, (error) => {
                 console.error("Error listening to history:", error);
                 historyList.innerHTML = '<p class="text-center text-red-500">Could not load history.</p>';
-            });
-        }
-        
-        // --- Summary/Chart Logic ---
-        function updateFilterButtons(activeFilter) {
-            filterBtns.forEach(btn => {
-                btn.classList.toggle('bg-blue-600', btn.id === activeFilter);
-                btn.classList.toggle('text-white', btn.id === activeFilter);
-                btn.classList.toggle('bg-gray-100', btn.id !== activeFilter);
-                btn.classList.toggle('text-gray-700', btn.id !== activeFilter);
-            });
-        }
-        
-        async function loadSummaryData() {
-             if (!isAuthReady) return;
-             const expensesCol = collection(db, `artifacts/${appId}/users/${userId}/expenses`);
-             const q = query(expensesCol);
-             const querySnapshot = await getDocs(q);
-             allExpenses = [];
-             querySnapshot.forEach((doc) => {
-                 allExpenses.push({ id: doc.id, ...doc.data() });
-             });
-             updateChart(3); // Default to 3 months
-             updateFilterButtons('filter-3m');
-        }
-
-        function updateChart(months) {
-            const cutoffDate = new Date();
-            cutoffDate.setMonth(cutoffDate.getMonth() - months);
-
-            const filteredExpenses = allExpenses.filter(exp => new Date(exp.date) >= cutoffDate);
-
-            if (filteredExpenses.length === 0) {
-                noChartData.classList.remove('hidden');
-                chartContainer.classList.add('hidden');
-                summaryDetails.classList.add('hidden');
-                if (expenseChart) expenseChart.destroy();
-                return;
-            }
-            
-            noChartData.classList.add('hidden');
-            chartContainer.classList.remove('hidden');
-            summaryDetails.classList.remove('hidden');
-
-            const totalSpent = filteredExpenses.reduce((sum, exp) => sum + exp.total, 0);
-            summaryTotalEl.textContent = new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' }).format(totalSpent);
-
-            const dataByShop = filteredExpenses.reduce((acc, exp) => {
-                const shop = exp.shopName || 'Unknown Shop';
-                acc[shop] = (acc[shop] || 0) + exp.total;
-                return acc;
-            }, {});
-            
-            summaryListEl.innerHTML = '';
-            const sortedShops = Object.entries(dataByShop).sort(([, a], [, b]) => b - a);
-
-            for (const [shop, amount] of sortedShops) {
-                 const listItem = document.createElement('div');
-                 listItem.className = 'flex justify-between items-center bg-gray-50 p-3 rounded-md';
-                 listItem.innerHTML = `
-                    <span class="font-medium text-gray-800">${shop}</span>
-                    <span class="font-semibold text-gray-900">${new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' }).format(amount)}</span>
-                `;
-                 summaryListEl.appendChild(listItem);
-            }
-
-
-            const labels = Object.keys(dataByShop);
-            const data = Object.values(dataByShop);
-
-            if (expenseChart) {
-                expenseChart.destroy();
-            }
-
-            const ctx = chartCanvas.getContext('2d');
-            expenseChart = new Chart(ctx, {
-                type: 'pie',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Spending by Shop',
-                        data: data,
-                        backgroundColor: labels.map((_, i) => `hsl(${(i * 50) % 360}, 70%, 60%)`),
-                        hoverOffset: 4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'top',
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    let label = context.label || '';
-                                    if (label) {
-                                        label += ': ';
-                                    }
-                                    if (context.parsed !== null) {
-                                        label += new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' }).format(context.parsed);
-                                    }
-                                    return label;
-                                }
-                            }
-                        }
-                    }
-                }
             });
         }
 
@@ -678,25 +581,13 @@
             // App listeners
             homeNavBtn.addEventListener('click', () => { showMainAppScreen('home-screen'); updateNav('nav-home'); });
             historyNavBtn.addEventListener('click', () => { showMainAppScreen('history-screen'); updateNav('nav-history'); });
-            summaryNavBtn.addEventListener('click', () => { showMainAppScreen('summary-screen'); updateNav('nav-summary'); });
-            
             receiptUploadInput.addEventListener('change', handleFileUpload);
             saveBtn.addEventListener('click', saveExpense);
-            cancelBtn.addEventListener('click', () => { resetForm(); showMainAppScreen('home-screen'); });
-            
+            cancelBtn.addEventListener('click', () => { resetForm(); showMainAppScreen('home-screen'); updateNav('nav-home'); });
             alertModalCloseBtn.addEventListener('click', () => hideModal('alert'));
             detailModalCloseBtn.addEventListener('click', () => hideModal('detail'));
             deleteConfirmBtn.addEventListener('click', deleteExpense);
             deleteCancelBtn.addEventListener('click', () => hideModal('deleteConfirm'));
-
-            // Chart filter listeners
-            filterBtns.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const months = parseInt(btn.id.split('-')[1]);
-                    updateChart(months);
-                    updateFilterButtons(btn.id);
-                });
-            });
         }
 
         // --- Initialization ---
@@ -704,26 +595,24 @@
             const app = initializeApp(firebaseConfig);
             db = getFirestore(app);
             auth = getAuth(app);
+
             setupEventListeners();
-            onAuthStateChanged(auth, async (user) => {
+
+            onAuthStateChanged(auth, (user) => {
                 if (user) {
+                    // User is logged in
                     userId = user.uid;
-                    isAuthReady = true;
-                     // If user is on a specific page, ensure it loads data
-                    if (document.getElementById('history-screen').classList.contains('active-screen')) {
-                        fetchAndDisplayHistory();
-                    } else if(document.getElementById('summary-screen').classList.contains('active-screen')) {
-                        loadSummaryData();
-                    }
+                    authScreen.classList.remove('active-screen');
+                    mainApp.classList.remove('hidden');
+                    showMainAppScreen('home-screen');
+                    updateNav('nav-home');
                 } else {
-                    try {
-                        await signInAnonymously(auth);
-                        // onAuthStateChanged will be triggered again with a user object
-                    } catch (error) {
-                         console.error("Anonymous sign-in failed:", error);
-                         showModal("Authentication failed. The app cannot save data.");
-                         isAuthReady = false;
-                    }
+                    // User is logged out
+                    userId = null;
+                    if(unsubscribeHistory) unsubscribeHistory();
+                    historyList.innerHTML = '';
+                    authScreen.classList.add('active-screen');
+                    mainApp.classList.add('hidden');
                 }
             });
         }
