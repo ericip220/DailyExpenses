@@ -264,15 +264,18 @@
         const filterBtns = document.querySelectorAll('.filter-btn');
 
         // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-	    const firebaseConfig = {
-  	    apiKey: "AIzaSyDmjj7Qc1nVFxT13UCOdDgdHkC6KhWEPPg",
-  	    authDomain: "dailyexpense-22a97.firebaseapp.com",
-  	    projectId: "dailyexpense-22a97",
-  	    storageBucket: "dailyexpense-22a97.firebasestorage.app",
-  	    messagingSenderId: "923676503604",
-  	    appId: "1:923676503604:web:8924e975ead398f2c86461",
-  	    measurementId: "G-H9QD9SSL3Y"
-	    };
+        const firebaseConfig = {
+        apiKey: "AIzaSyDmjj7Qc1nVFxT13UCOdDgdHkC6KhWEPPg",
+        authDomain: "dailyexpense-22a97.firebaseapp.com",
+        projectId: "dailyexpense-22a97",
+        storageBucket: "dailyexpense-22a97.firebasestorage.app",
+        messagingSenderId: "923676503604",
+        appId: "1:923676503604:web:8924e975ead398f2c86461",
+        measurementId: "G-H9QD9SSL3Y"
+        };
+
+        // **BUG FIX**: Added the appId definition back in.
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';        
 
         // --- Utility Functions ---
         function showMainAppScreen(screenId) {
