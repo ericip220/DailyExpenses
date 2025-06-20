@@ -96,7 +96,7 @@
                     <div class="bg-white p-8 rounded-xl shadow-md border border-gray-200 text-center">
                         <div class="spinner mx-auto mb-4"></div>
                         <h2 class="text-xl font-semibold">Reading Receipt...</h2>
-                        <p class="text-gray-500">Extracting information, please wait.</p>
+                        <p class="text-gray-500">Categorizing items, please wait.</p>
                     </div>
                 </section>
 
@@ -121,6 +121,20 @@
 
                 <!-- History Screen -->
                 <section id="history-screen" class="screen">
+                    <div class="flex flex-col sm:flex-row gap-4 mb-4">
+                        <div class="flex-grow">
+                            <label for="sort-by" class="block text-sm font-medium text-gray-700">Sort by</label>
+                            <select id="sort-by" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                                <option value="date-desc">Date (Newest First)</option>
+                                <option value="date-asc">Date (Oldest First)</option>
+                                <option value="total-desc">Total (High to Low)</option>
+                                <option value="total-asc">Total (Low to High)</option>
+                            </select>
+                        </div>
+                        <div class="flex-shrink-0 self-end">
+                             <button id="export-btn" class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700">Export to Excel</button>
+                        </div>
+                    </div>
                     <div id="history-list" class="space-y-3">
                         <!-- History items will be injected here -->
                     </div>
@@ -141,6 +155,10 @@
                                 <p class="text-gray-600">Total Spent in Period:</p>
                                 <p id="summary-total" class="text-3xl font-bold text-gray-900">£0.00</p>
                             </div>
+                            <div class="mb-4 flex justify-center bg-gray-100 rounded-lg p-1">
+                                <button id="chart-by-shop" class="chart-toggle-btn flex-1 py-2 px-4 text-sm font-semibold rounded-md transition-colors">By Shop</button>
+                                <button id="chart-by-category" class="chart-toggle-btn flex-1 py-2 px-4 text-sm font-semibold rounded-md transition-colors">By Category</button>
+                           </div>
                             <div id="summary-list" class="mt-4 space-y-2">
                                 <!-- Per-shop summary will be injected here -->
                             </div>
@@ -182,6 +200,21 @@
         </div>
     </div>
 
+    <!-- Category Detail Modal -->
+    <div id="category-detail-modal" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center p-4 z-50" style="display: none;">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-md">
+            <div class="p-6">
+                <h3 class="text-xl font-semibold mb-4" id="category-detail-title">Category Details</h3>
+                <div id="category-detail-list" class="max-h-80 overflow-y-auto space-y-2 pr-2">
+                    <!-- Category item details will be injected here -->
+                </div>
+            </div>
+            <div class="bg-gray-100 px-6 py-3 flex justify-end">
+                <button id="category-detail-close-btn" class="bg-gray-600 text-white py-2 px-6 rounded-md hover:bg-gray-700">Close</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Delete Confirmation Modal -->
     <div id="delete-confirm-modal" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center p-4 z-50" style="display: none;">
         <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-sm text-center">
@@ -211,6 +244,8 @@
         let expenseIdToDelete = null;
         let allExpenses = [];
         let expenseChart = null;
+        let currentSort = 'date-desc';
+        let currentChartType = 'shop';
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
 
         // --- UI Elements ---
@@ -241,6 +276,8 @@
         const cancelBtn = document.getElementById('cancel-btn');
 
         const historyList = document.getElementById('history-list');
+        const sortBySelect = document.getElementById('sort-by');
+        const exportBtn = document.getElementById('export-btn');
         
         const alertModal = document.getElementById('alert-modal');
         const alertModalMessage = document.getElementById('alert-modal-message');
@@ -255,6 +292,11 @@
         const deleteConfirmBtn = document.getElementById('delete-confirm-btn');
         const deleteCancelBtn = document.getElementById('delete-cancel-btn');
 
+        const categoryDetailModal = document.getElementById('category-detail-modal');
+        const categoryDetailTitle = document.getElementById('category-detail-title');
+        const categoryDetailList = document.getElementById('category-detail-list');
+        const categoryDetailCloseBtn = document.getElementById('category-detail-close-btn');
+
         const summaryDetails = document.getElementById('summary-details');
         const summaryTotalEl = document.getElementById('summary-total');
         const summaryListEl = document.getElementById('summary-list');
@@ -262,6 +304,8 @@
         const noChartData = document.getElementById('no-chart-data');
         const chartCanvas = document.getElementById('expense-chart');
         const filterBtns = document.querySelectorAll('.filter-btn');
+        const chartToggleBtns = document.querySelectorAll('.chart-toggle-btn');
+
 
         // For Firebase JS SDK v7.20.0 and later, measurementId is optional
         const firebaseConfig = {
@@ -277,6 +321,7 @@
         // **BUG FIX**: Added the appId definition back in.
         //const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';        
 
+        
         // --- Utility Functions ---
         function showMainAppScreen(screenId) {
             mainAppScreens.forEach(screen => {
@@ -309,6 +354,8 @@
                  detailModal.style.display = 'flex';
             } else if (type === 'deleteConfirm') {
                  deleteConfirmModal.style.display = 'flex';
+            } else if (type === 'categoryDetail') {
+                 categoryDetailModal.style.display = 'flex';
             }
         }
 
@@ -319,6 +366,8 @@
                 detailModal.style.display = 'none';
             } else if (type === 'deleteConfirm') {
                 deleteConfirmModal.style.display = 'none';
+            } else if (type === 'categoryDetail') {
+                categoryDetailModal.style.display = 'none';
             }
         }
 
@@ -399,7 +448,12 @@
         }
 
         async function extractDataFromImage(base64ImageData) {
-            const prompt = `Analyze this receipt image. Extract shopName, shopLocation, date (YYYY-MM-DD), time (HH:MM), total (number), and an array of items with name and price. Return a JSON object.`;
+            const prompt = `
+                Analyze this receipt image. Extract shopName, shopLocation, date (YYYY-MM-DD), time (HH:MM), total (number), and an array of items. 
+                For each item, extract its name, price, and a category.
+                The category must be one of the following: 'Produce', 'Dairy & Eggs', 'Meat & Fish', 'Bakery', 'Frozen Foods', 'Pantry', 'Snacks', 'Drinks', 'Household', 'Toiletries', 'Pet', 'Other'.
+                Return a single JSON object.
+            `;
             const payload = {
                 contents: [{ parts: [{ text: prompt }, { inlineData: { mimeType: "image/jpeg", data: base64ImageData } }] }],
                 generationConfig: { "responseMimeType": "application/json" }
@@ -479,8 +533,12 @@
                  expense.items.forEach(item => {
                     const itemEl = document.createElement('div');
                     itemEl.className = 'flex justify-between items-center bg-gray-50 p-2 rounded-md';
+                    const categoryText = item.category ? `<em class="text-xs text-gray-500 ml-2">${item.category}</em>` : '';
                     itemEl.innerHTML = `
-                        <span class="text-gray-700">${item.name || 'Unnamed Item'}</span>
+                        <div>
+                            <span class="text-gray-700">${item.name || 'Unnamed Item'}</span>
+                            ${categoryText}
+                        </div>
                         <span class="font-medium text-gray-900">£${(item.price || 0).toFixed(2)}</span>
                     `;
                     detailModalList.appendChild(itemEl);
@@ -508,6 +566,55 @@
                 expenseIdToDelete = null;
             }
         }
+        
+        function renderHistoryList() {
+            let sortedExpenses = [...allExpenses];
+            switch (currentSort) {
+                case 'date-asc':
+                    sortedExpenses.sort((a, b) => new Date(a.date) - new Date(b.date));
+                    break;
+                case 'total-desc':
+                    sortedExpenses.sort((a, b) => b.total - a.total);
+                    break;
+                case 'total-asc':
+                    sortedExpenses.sort((a, b) => a.total - b.total);
+                    break;
+                case 'date-desc':
+                default:
+                    sortedExpenses.sort((a, b) => new Date(b.date) - new Date(a.date));
+                    break;
+            }
+
+            if (sortedExpenses.length === 0) {
+                historyList.innerHTML = '<p class="text-center text-gray-500">No expenses logged yet.</p>';
+                return;
+            }
+
+            historyList.innerHTML = '';
+            sortedExpenses.forEach(expense => {
+                const expenseEl = document.createElement('div');
+                expenseEl.className = 'bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex justify-between items-center';
+                const locationText = expense.shopLocation ? ` (${expense.shopLocation})` : '';
+                const mainContent = document.createElement('div');
+                mainContent.className = 'flex-grow cursor-pointer';
+                mainContent.innerHTML = `<p class="font-semibold text-gray-800">${expense.shopName}${locationText}</p><p class="text-sm text-gray-500">${new Date(expense.date).toLocaleDateString()} at ${expense.time || ''}</p>`;
+                mainContent.addEventListener('click', () => displayExpenseDetails(expense));
+                
+                const totalEl = document.createElement('p');
+                totalEl.className = 'text-lg font-bold text-blue-600 ml-4';
+                totalEl.textContent = `£${(expense.total).toFixed(2)}`;
+                
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'ml-4 p-2 rounded-full hover:bg-red-100 text-gray-400 hover:text-red-600 transition-colors';
+                deleteBtn.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`;
+                deleteBtn.addEventListener('click', (e) => { e.stopPropagation(); promptForDelete(expense.id); });
+
+                expenseEl.appendChild(mainContent);
+                expenseEl.appendChild(totalEl);
+                expenseEl.appendChild(deleteBtn);
+                historyList.appendChild(expenseEl);
+            });
+        }
 
         function fetchAndDisplayHistory() {
             if (unsubscribeHistory) unsubscribeHistory();
@@ -516,41 +623,11 @@
             const q = query(expensesCol);
 
             unsubscribeHistory = onSnapshot(q, (querySnapshot) => {
-                const expenses = [];
+                allExpenses = [];
                 querySnapshot.forEach((doc) => {
-                    expenses.push({ id: doc.id, ...doc.data() });
+                    allExpenses.push({ id: doc.id, ...doc.data() });
                 });
-                allExpenses = expenses.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-                
-                if (allExpenses.length === 0) {
-                    historyList.innerHTML = '<p class="text-center text-gray-500">No expenses logged yet.</p>';
-                    return;
-                }
-
-                historyList.innerHTML = '';
-                allExpenses.forEach(expense => {
-                    const expenseEl = document.createElement('div');
-                    expenseEl.className = 'bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex justify-between items-center';
-                    const locationText = expense.shopLocation ? ` (${expense.shopLocation})` : '';
-                    const mainContent = document.createElement('div');
-                    mainContent.className = 'flex-grow cursor-pointer';
-                    mainContent.innerHTML = `<p class="font-semibold text-gray-800">${expense.shopName}${locationText}</p><p class="text-sm text-gray-500">${new Date(expense.date).toLocaleDateString()} at ${expense.time || ''}</p>`;
-                    mainContent.addEventListener('click', (e) => displayExpenseDetails(expense));
-                    
-                    const totalEl = document.createElement('p');
-                    totalEl.className = 'text-lg font-bold text-blue-600 ml-4';
-                    totalEl.textContent = `£${(expense.total).toFixed(2)}`;
-                    
-                    const deleteBtn = document.createElement('button');
-                    deleteBtn.className = 'ml-4 p-2 rounded-full hover:bg-red-100 text-gray-400 hover:text-red-600 transition-colors';
-                    deleteBtn.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`;
-                    deleteBtn.addEventListener('click', (e) => { e.stopPropagation(); promptForDelete(expense.id); });
-
-                    expenseEl.appendChild(mainContent);
-                    expenseEl.appendChild(totalEl);
-                    expenseEl.appendChild(deleteBtn);
-                    historyList.appendChild(expenseEl);
-                });
+                renderHistoryList();
             }, (error) => {
                 console.error("Error listening to history:", error);
                 historyList.innerHTML = '<p class="text-center text-red-500">Could not load history.</p>';
@@ -558,8 +635,9 @@
         }
         
         // --- Summary/Chart Logic ---
-        function updateFilterButtons(activeFilter) {
-            filterBtns.forEach(btn => {
+        function updateFilterButtons(activeFilter, buttonGroup) {
+            const btns = document.querySelectorAll(buttonGroup);
+            btns.forEach(btn => {
                 btn.classList.toggle('bg-blue-600', btn.id === activeFilter);
                 btn.classList.toggle('text-white', btn.id === activeFilter);
                 btn.classList.toggle('bg-gray-100', btn.id !== activeFilter);
@@ -576,8 +654,9 @@
              querySnapshot.forEach((doc) => {
                  allExpenses.push({ id: doc.id, ...doc.data() });
              });
-             updateChart(3); // Default to 3 months
-             updateFilterButtons('filter-3m');
+             updateChart(3);
+             updateFilterButtons('filter-3m', '.filter-btn');
+             updateFilterButtons('chart-by-shop', '.chart-toggle-btn');
         }
 
         function updateChart(months) {
@@ -601,40 +680,53 @@
             const totalSpent = filteredExpenses.reduce((sum, exp) => sum + exp.total, 0);
             summaryTotalEl.textContent = new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' }).format(totalSpent);
 
-            const dataByShop = filteredExpenses.reduce((acc, exp) => {
-                const shop = exp.shopName || 'Unknown Shop';
-                acc[shop] = (acc[shop] || 0) + exp.total;
-                return acc;
-            }, {});
-            
-            summaryListEl.innerHTML = '';
-            const sortedShops = Object.entries(dataByShop).sort(([, a], [, b]) => b - a);
+            let dataByGroup;
 
-            for (const [shop, amount] of sortedShops) {
+            if (currentChartType === 'category') {
+                dataByGroup = filteredExpenses.reduce((acc, exp) => {
+                    (exp.items || []).forEach(item => {
+                        const category = item.category || 'Other';
+                        acc[category] = (acc[category] || 0) + (item.price || 0);
+                    });
+                    return acc;
+                }, {});
+            } else { // Default to 'shop'
+                 dataByGroup = filteredExpenses.reduce((acc, exp) => {
+                    const shop = exp.shopName || 'Unknown Shop';
+                    acc[shop] = (acc[shop] || 0) + exp.total;
+                    return acc;
+                }, {});
+            }
+
+            summaryListEl.innerHTML = '';
+            const sortedGroups = Object.entries(dataByGroup).sort(([, a], [, b]) => b - a);
+
+            for (const [groupName, amount] of sortedGroups) {
                  const listItem = document.createElement('div');
                  listItem.className = 'flex justify-between items-center bg-gray-50 p-3 rounded-md';
+                 if (currentChartType === 'category') {
+                     listItem.classList.add('cursor-pointer', 'hover:bg-gray-200');
+                     listItem.addEventListener('click', () => displayCategoryDetails(groupName, months));
+                 }
                  listItem.innerHTML = `
-                    <span class="font-medium text-gray-800">${shop}</span>
+                    <span class="font-medium text-gray-800">${groupName}</span>
                     <span class="font-semibold text-gray-900">${new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' }).format(amount)}</span>
                 `;
                  summaryListEl.appendChild(listItem);
             }
 
+            const labels = Object.keys(dataByGroup);
+            const data = Object.values(dataByGroup);
 
-            const labels = Object.keys(dataByShop);
-            const data = Object.values(dataByShop);
-
-            if (expenseChart) {
-                expenseChart.destroy();
-            }
-
+            if (expenseChart) expenseChart.destroy();
+            
             const ctx = chartCanvas.getContext('2d');
             expenseChart = new Chart(ctx, {
                 type: 'pie',
                 data: {
                     labels: labels,
                     datasets: [{
-                        label: 'Spending by Shop',
+                        label: `Spending by ${currentChartType.charAt(0).toUpperCase() + currentChartType.slice(1)}`,
                         data: data,
                         backgroundColor: labels.map((_, i) => `hsl(${(i * 50) % 360}, 70%, 60%)`),
                         hoverOffset: 4
@@ -643,38 +735,57 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'top',
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    let label = context.label || '';
-                                    if (label) {
-                                        label += ': ';
-                                    }
-                                    if (context.parsed !== null) {
-                                        label += new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' }).format(context.parsed);
-                                    }
-                                    return label;
-                                }
-                            }
-                        }
-                    }
+                    plugins: { legend: { position: 'top' }, tooltip: { callbacks: { label: (c) => `${c.label}: ${new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' }).format(c.parsed)}` } } }
                 }
             });
+        }
+        
+        function displayCategoryDetails(categoryName, months) {
+            categoryDetailTitle.textContent = `Items in "${categoryName}"`;
+            const cutoffDate = new Date();
+            cutoffDate.setMonth(cutoffDate.getMonth() - months);
+            
+            const itemsInCategory = [];
+            allExpenses
+                .filter(exp => new Date(exp.date) >= cutoffDate)
+                .forEach(exp => {
+                    (exp.items || []).forEach(item => {
+                        if ((item.category || 'Other') === categoryName) {
+                            itemsInCategory.push({ ...item, date: exp.date });
+                        }
+                    });
+                });
+            
+            itemsInCategory.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            categoryDetailList.innerHTML = '';
+            if(itemsInCategory.length > 0) {
+                itemsInCategory.forEach(item => {
+                    const itemEl = document.createElement('div');
+                    itemEl.className = 'flex justify-between items-center bg-gray-50 p-2 rounded-md';
+                    itemEl.innerHTML = `
+                        <div>
+                            <span class="text-gray-700">${item.name || 'Unnamed Item'}</span>
+                            <span class="text-xs text-gray-500 ml-2">(${new Date(item.date).toLocaleDateString()})</span>
+                        </div>
+                        <span class="font-medium text-gray-900">£${(item.price || 0).toFixed(2)}</span>
+                    `;
+                    categoryDetailList.appendChild(itemEl);
+                });
+            } else {
+                 categoryDetailList.innerHTML = `<p class="text-center text-gray-500">No items found in this category for the selected period.</p>`;
+            }
+
+            showModal(null, 'categoryDetail');
         }
 
 
         // --- Event Listeners Setup ---
         function setupEventListeners() {
-            // Auth listeners
             loginBtn.addEventListener('click', handleLogin);
             signupBtn.addEventListener('click', handleSignUp);
             logoutBtn.addEventListener('click', handleLogout);
 
-            // App listeners
             homeNavBtn.addEventListener('click', () => { showMainAppScreen('home-screen'); updateNav('nav-home'); });
             historyNavBtn.addEventListener('click', () => { showMainAppScreen('history-screen'); updateNav('nav-history'); });
             summaryNavBtn.addEventListener('click', () => { showMainAppScreen('summary-screen'); updateNav('nav-summary'); });
@@ -687,13 +798,44 @@
             detailModalCloseBtn.addEventListener('click', () => hideModal('detail'));
             deleteConfirmBtn.addEventListener('click', deleteExpense);
             deleteCancelBtn.addEventListener('click', () => hideModal('deleteConfirm'));
+            categoryDetailCloseBtn.addEventListener('click', () => hideModal('categoryDetail'));
 
-            // Chart filter listeners
+
+            sortBySelect.addEventListener('change', (e) => {
+                currentSort = e.target.value;
+                renderHistoryList();
+            });
+
+            exportBtn.addEventListener('click', () => {
+                let csvContent = "data:text/csv;charset=utf-8,Date,Time,Shop,Location,Total,Items\n";
+                allExpenses.forEach(exp => {
+                    const itemsStr = (exp.items || []).map(i => `${i.name} (${i.price.toFixed(2)})`).join('; ');
+                    const row = [exp.date, exp.time, `"${exp.shopName}"`, `"${exp.shopLocation}"`, exp.total, `"${itemsStr}"`];
+                    csvContent += row.join(",") + "\r\n";
+                });
+                const encodedUri = encodeURI(csvContent);
+                const link = document.createElement("a");
+                link.setAttribute("href", encodedUri);
+                link.setAttribute("download", "expenses.csv");
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
+
             filterBtns.forEach(btn => {
                 btn.addEventListener('click', () => {
                     const months = parseInt(btn.id.split('-')[1]);
                     updateChart(months);
-                    updateFilterButtons(btn.id);
+                    updateFilterButtons(btn.id, '.filter-btn');
+                });
+            });
+
+            chartToggleBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    currentChartType = btn.id.includes('shop') ? 'shop' : 'category';
+                    const activeFilter = document.querySelector('.filter-btn.bg-blue-600') || document.getElementById('filter-3m');
+                    updateChart(parseInt(activeFilter.id.split('-')[1]));
+                    updateFilterButtons(btn.id, '.chart-toggle-btn');
                 });
             });
         }
@@ -709,6 +851,7 @@
                     userId = user.uid;
                     isAuthReady = true;
                     authScreen.classList.add('hidden');
+                    authScreen.classList.remove('active-screen');
                     mainApp.classList.remove('hidden');
                     showMainAppScreen('home-screen');
                     updateNav('nav-home');
