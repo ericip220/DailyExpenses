@@ -66,10 +66,19 @@
                             <input type="email" id="email" autocomplete="email"
                                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
                         </div>
-                        <div>
+                        <div class="relative">
                             <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
                             <input type="password" id="password" autocomplete="current-password"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm pr-10">
+                            <button type="button" id="toggle-password-visibility"
+                                class="absolute right-2 top-8 text-gray-400 hover:text-gray-700 focus:outline-none">
+                                <!-- Eye SVG -->
+                                <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0zm-9 0a9 9 0 0118 0 9 9 0 01-18 0z" />
+                                </svg>
+                            </button>
                             <button id="forgot-password-btn" type="button"
                                 class="mt-2 text-xs text-blue-600 hover:underline">Forgot Password?</button>
                         </div>
@@ -331,6 +340,15 @@
         const mainApp = document.getElementById('main-app');
         const emailInput = document.getElementById('email');
         const passwordInput = document.getElementById('password');
+        const togglePasswordBtn = document.getElementById('toggle-password-visibility');
+        const eyeIcon = document.getElementById('eye-icon');
+
+        togglePasswordBtn.addEventListener('click', () => {
+            const isPassword = passwordInput.type === 'password';
+            passwordInput.type = isPassword ? 'text' : 'password';
+            // Optionally, you can swap the SVG icon here for "eye-off"
+        });
+
         const loginBtn = document.getElementById('login-btn');
         const signupBtn = document.getElementById('signup-btn');
         const logoutBtn = document.getElementById('logout-btn');
