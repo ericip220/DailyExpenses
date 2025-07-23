@@ -581,6 +581,13 @@
 
                 if (result.candidates && result.candidates[0].content && result.candidates[0].content.parts[0]) {
                     const data = JSON.parse(result.candidates[0].content.parts[0].text);
+                    // Filter out "gift card" and "gift card balance" items (case-insensitive)
+                    if (Array.isArray(data.items)) {
+                        data.items = data.items.filter(item => {
+                            const name = (item.name || '').toLowerCase();
+                            return name !== 'gift card' && name !== 'gift card balance';
+                        });
+                    }
                     currentExpenseDetails = data;
                     shopNameInput.value = data.shopName || '';
                     shopLocationInput.value = data.shopLocation || '';
