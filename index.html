@@ -585,7 +585,7 @@
                     if (Array.isArray(data.items)) {
                         data.items = data.items.filter(item => {
                             const name = (item.name || '').toLowerCase();
-                            return name !== 'gift card' && name !== 'gift card balance';
+                            return name !== 'gift card' && name !== 'gift card balance' && name !== 'balance';
                         });
                     }
                     currentExpenseDetails = data;
