@@ -1,6 +1,6 @@
 {
-  "name": "MyWebSite",
-  "short_name": "MySite",
+  "name": "Daily Expenses",
+  "short_name": "Daily Expenses",
   "icons": [
     {
       "src": "/web-app-manifest-192x192.png",
